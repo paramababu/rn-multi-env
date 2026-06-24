@@ -2,9 +2,26 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
-# Changelog
+## [1.2.0] - 2026-06-24
+### Changed
+- Refactored the single `index.js` into a modular `src/` structure (`cli`, `flavor`, `android`, `ios`, `env`, `scripts`, `gradle`, `validate`, `paths`, `prompt`, `logger`, `utils`) with a thin `bin/cli.js` entry point
+- Centralized console output in `src/logger.js`
+- Brace-aware, indentation-preserving `build.gradle` injection/removal extracted into pure, testable functions
 
-All notable changes to this project will be documented in this file.
+### Added
+- Jest unit + integration test suite (`tests/`) covering validation, gradle transforms, and all generators against temp projects
+- CI workflow running tests on Node 18 & 20; release workflow now runs tests before publishing
+- Error handling: friendly messages + non-zero exit codes for unexpected failures and malformed `package.json`
+- `remove <flavor>` command (with `--dry-run`) wired into the CLI
+- Flavor-name validation (rejects invalid identifiers and reserved Gradle names)
+- `--package` now sets the flavor `applicationId` in `build.gradle`
+- Real iOS support: per-flavor `ios/config/<Flavor>.xcconfig` (ENVFILE, bundle id, display name), a valid placeholder `GoogleService-Info-<flavor>.plist`, and printed Xcode scheme/configuration steps
+- `LICENSE` file (MIT)
+
+### Fixed
+- Brace-aware removal of flavor blocks from `build.gradle`
+- Ensure a `flavorDimensions` declaration exists when appending to existing `productFlavors`
+- Removed committed `firebase-debug.log` and redundant `yarn.lock`
 
 ## [1.0.7] - 2025-07-23
 ### Added

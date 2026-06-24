@@ -12,14 +12,15 @@ CLI to automatically create Android/iOS build flavors for React Native projects 
 
 - 📁 Creates `android/app/src/<flavor>` folder with manifest and strings
 - 📜 Injects flavor into `build.gradle` (`productFlavors`)
-- 🍏 Generates `ios/GoogleService-Info-<flavor>.plist`
+- 🍏 Generates `ios/GoogleService-Info-<flavor>.plist` and `ios/config/<Flavor>.xcconfig` (with `ENVFILE`, bundle id and display name), then prints the manual Xcode scheme/configuration steps
 - 🌱 Creates `.env.<flavor>` file using a customizable template
 - 🧠 Injects `require('react-native-config')` into `App.js` or `App.tsx`
 - 📦 Auto-installs `react-native-config` using npm/yarn/pnpm (based on lock files)
 - 📜 Automatically adds run script to `package.json` like:  
   ```json
-  "android-staging": "npx react-native run-android --variant=stagingDebug"
+  "android-staging": "cd android && ./gradlew installStagingDebug"
   ```
+- 🧹 Removes a flavor (Android src, `.env`, iOS plist, gradle block, run script) with `remove`, supporting `--dry-run`
 
 ---
 
@@ -41,6 +42,22 @@ npx rn-build-flavor-cli create staging \
   --name="MyApp Staging"
 ```
 
+> When `--package` is provided it is set as the flavor's `applicationId` in
+> `build.gradle`. Without it, an `applicationIdSuffix` derived from the flavor
+> name is used instead.
+
+Flavor names must be camelCase identifiers (letters and digits, starting with a
+lowercase letter). Reserved Gradle names like `test`, `main`, and `androidTest`
+are rejected.
+
+### Remove a flavor
+
+```bash
+npx rn-build-flavor-cli remove staging
+# preview without changing anything
+npx rn-build-flavor-cli remove staging --dry-run
+```
+
 ---
 
 ## 📲 How to Run a Flavor
@@ -56,10 +73,32 @@ npm run android-staging
 This will internally run:
 
 ```bash
-npx react-native run-android --variant=stagingDebug
+cd android && ./gradlew installStagingDebug
 ```
 
 ⚠️ **Note:** Do not name your flavor `test` — it's a reserved word in Gradle and will break the build.
+
+---
+
+## 🍏 Finishing iOS Setup
+
+iOS can't be fully automated safely (it would mean editing `project.pbxproj`), so the
+CLI generates the supporting files and prints the remaining manual Xcode steps:
+
+1. Open `ios/<App>.xcodeproj` (or `.xcworkspace`) in Xcode.
+2. **Project ▸ Info ▸ Configurations** — duplicate `Debug`/`Release` into
+   `Debug.<flavor>` / `Release.<flavor>`.
+3. Set each new configuration's *Based on configuration file* to
+   `config/<Flavor>.xcconfig`.
+4. **Product ▸ Scheme ▸ Manage Schemes** — add a `<flavor>` scheme pointing its
+   Run/Archive build configs at the new configurations.
+5. Replace `GoogleService-Info-<flavor>.plist` with the real Firebase file.
+
+Then run:
+
+```bash
+npx react-native run-ios --scheme staging
+```
 
 ---
 
@@ -71,7 +110,9 @@ android/app/src/staging/
 └── res/values/strings.xml
 
 ios/
-└── GoogleService-Info-staging.plist
+├── GoogleService-Info-staging.plist
+└── config/
+    └── Staging.xcconfig
 
 .env.staging
 
@@ -103,6 +144,44 @@ The CLI will detect your project setup and use:
 - `yarn add react-native-config`
 - `pnpm add react-native-config`
 - `npm install react-native-config`
+
+---
+
+## 🗂️ Project Structure
+
+```
+bin/
+└── cli.js              # executable entry point (shebang)
+src/
+├── cli.js              # commander setup + error handling
+├── flavor.js           # create/remove orchestration
+├── android.js          # manifest, strings.xml, build.gradle
+├── ios.js              # plist + xcconfig + Xcode steps
+├── env.js              # .env + react-native-config wiring
+├── scripts.js          # package.json run scripts
+├── gradle.js           # pure build.gradle string transforms
+├── validate.js         # flavor-name validation
+├── paths.js            # project paths (root-injectable)
+├── prompt.js           # inquirer wrapper
+├── logger.js           # centralized colored output
+└── utils.js            # capitalize, safe JSON read
+tests/                  # Jest unit + integration tests
+templates/
+└── env.example
+```
+
+## 🧪 Development & Testing
+
+```bash
+npm install
+npm test            # run the Jest suite
+npm run test:watch  # watch mode
+npm run test:coverage
+```
+
+The filesystem generators take a `root` argument so they run against isolated
+temp directories in tests; `src/gradle.js` is pure string logic and fully unit
+tested.
 
 ---
 

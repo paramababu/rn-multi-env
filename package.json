@@ -1,10 +1,10 @@
 {
   "name": "rn-build-flavor-cli",
-  "version": "1.1.2",
+  "version": "1.2.0",
   "description": "CLI tool to add build flavors for React Native apps",
-  "main": "index.js",
+  "main": "src/cli.js",
   "bin": {
-    "rn-build-flavor": "./index.js"
+    "rn-build-flavor": "bin/cli.js"
   },
   "repository": {
     "type": "git",
@@ -25,9 +25,11 @@
   ],
   "author": "BabuParaman",
   "files": [
-    "index.js",
+    "bin/",
+    "src/",
+    "templates/",
     "README.md",
-    "templates/"
+    "LICENSE"
   ],
   "license": "MIT",
   "type": "commonjs",
@@ -35,7 +37,19 @@
     "node": ">=14.0.0"
   },
   "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
     "release": "standard-version"
+  },
+  "jest": {
+    "testEnvironment": "node",
+    "setupFilesAfterEnv": [
+      "<rootDir>/tests/setup.js"
+    ],
+    "testMatch": [
+      "**/tests/**/*.test.js"
+    ]
   },
   "dependencies": {
     "chalk": "^4.1.2",
@@ -44,6 +58,7 @@
     "inquirer": "^9.2.7"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "standard-version": "^9.5.0"
   }
 }
