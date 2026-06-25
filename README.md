@@ -1,6 +1,6 @@
 # rn-multi-env
 
-[![npm version](https://badge.fury.io/js/rn-multi-env.svg)](https://www.npmjs.com/package/rn-multi-env)
+[![npm version](https://img.shields.io/npm/v/rn-multi-env.svg)](https://www.npmjs.com/package/rn-multi-env)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![GitHub stars](https://img.shields.io/github/stars/paramababu/rn-multi-env?style=social)](https://github.com/paramababu/rn-multi-env)
 
