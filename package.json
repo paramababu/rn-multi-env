@@ -1,19 +1,19 @@
 {
-  "name": "rn-build-flavor-cli",
+  "name": "rn-multi-env",
   "version": "1.3.0",
-  "description": "CLI tool to add build flavors for React Native apps",
+  "description": "CLI tool to add multi-environment build flavors for React Native apps",
   "main": "src/cli.js",
   "bin": {
-    "rn-build-flavor": "bin/cli.js"
+    "rn-multi-env": "bin/cli.js"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/paramababu/rn-build-flavor-cli.git"
+    "url": "git+https://github.com/paramababu/rn-multi-env.git"
   },
   "bugs": {
-    "url": "https://github.com/paramababu/rn-build-flavor-cli/issues"
+    "url": "https://github.com/paramababu/rn-multi-env/issues"
   },
-  "homepage": "https://github.com/paramababu/rn-build-flavor-cli#readme",
+  "homepage": "https://github.com/paramababu/rn-multi-env#readme",
   "keywords": [
     "react-native",
     "flavor",

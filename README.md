@@ -1,8 +1,8 @@
-# rn-build-flavor-cli
+# rn-multi-env
 
-[![npm version](https://badge.fury.io/js/rn-build-flavor-cli.svg)](https://www.npmjs.com/package/rn-build-flavor-cli)
+[![npm version](https://badge.fury.io/js/rn-multi-env.svg)](https://www.npmjs.com/package/rn-multi-env)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![GitHub stars](https://img.shields.io/github/stars/paramababu/rn-build-flavor-cli?style=social)](https://github.com/paramababu/rn-build-flavor-cli)
+[![GitHub stars](https://img.shields.io/github/stars/paramababu/rn-multi-env?style=social)](https://github.com/paramababu/rn-multi-env)
 
 CLI to automatically create Android/iOS build flavors for React Native projects with `.env` support and `react-native-config` integration.
 
@@ -27,7 +27,7 @@ CLI to automatically create Android/iOS build flavors for React Native projects 
 ## 📦 Installation
 
 ```bash
-npm install -g rn-build-flavor-cli
+npm install -g rn-multi-env
 ```
 
 ---
@@ -37,7 +37,7 @@ npm install -g rn-build-flavor-cli
 ### Create a new flavor
 
 ```bash
-npx rn-build-flavor-cli create staging \
+npx rn-multi-env create staging \
   --package=com.myapp.staging \
   --name="MyApp Staging"
 ```
@@ -53,9 +53,9 @@ are rejected.
 ### Remove a flavor
 
 ```bash
-npx rn-build-flavor-cli remove staging
+npx rn-multi-env remove staging
 # preview without changing anything
-npx rn-build-flavor-cli remove staging --dry-run
+npx rn-multi-env remove staging --dry-run
 ```
 
 ---

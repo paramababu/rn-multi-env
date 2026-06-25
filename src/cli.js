@@ -20,8 +20,8 @@ function withErrorHandling(fn) {
 
 function run(argv = process.argv) {
   program
-    .name('rn-build-flavor')
-    .description('CLI to add build flavors for React Native apps')
+    .name('rn-multi-env')
+    .description('CLI to add multi-environment build flavors for React Native apps')
     .version(pkg.version);
 
   program
