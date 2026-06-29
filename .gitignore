@@ -134,3 +134,8 @@ dist
 .yarn/build-state.yml
 .yarn/install-state.gz
 .pnp.*
+
+# Firebase
+firebase-debug.log
+firebase-debug.*.log
+.firebase/

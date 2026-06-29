@@ -46,8 +46,22 @@ describe('ensureReactNativeConfig', () => {
     await ensureReactNativeConfig({ paths, run });
 
     const app = await fs.readFile(path.join(root, 'App.js'), 'utf8');
-    expect(app).toContain("require('react-native-config')");
+    expect(app).toContain("import Config from 'react-native-config';");
     expect(calls).toContain('yarn add react-native-config');
+    await fs.remove(root);
+  });
+
+  test('inserts the import after the existing import block', async () => {
+    const root = await makeTempProject({
+      'App.tsx': "import React from 'react';\nexport default 1;\n",
+    });
+    const paths = getPaths(root);
+    await ensureReactNativeConfig({ paths, run: () => {} });
+
+    const app = await fs.readFile(path.join(root, 'App.tsx'), 'utf8');
+    expect(app).toBe(
+      "import React from 'react';\nimport Config from 'react-native-config';\nexport default 1;\n"
+    );
     await fs.remove(root);
   });
 

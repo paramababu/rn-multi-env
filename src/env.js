@@ -33,7 +33,17 @@ async function ensureReactNativeConfig({ paths, run = execSync } = {}) {
   const appContent = await fs.readFile(appPath, 'utf8');
   if (appContent.includes('react-native-config')) return;
 
-  await fs.writeFile(appPath, `require('react-native-config');\n\n${appContent}`);
+  // RN App.js/App.tsx are ES modules, so add an idiomatic import placed after
+  // the existing import block rather than a bare require pinned to the top.
+  const importLine = "import Config from 'react-native-config';";
+  const lastImport = [...appContent.matchAll(/^import[^\n]*$/gm)].pop();
+  const updated = lastImport
+    ? appContent.slice(0, lastImport.index + lastImport[0].length) +
+      `\n${importLine}` +
+      appContent.slice(lastImport.index + lastImport[0].length)
+    : `${importLine}\n\n${appContent}`;
+
+  await fs.writeFile(appPath, updated);
   logger.success(`✅ Injected react-native-config import into ${path.basename(appPath)}`);
 
   try {

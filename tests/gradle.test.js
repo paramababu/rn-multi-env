@@ -69,4 +69,18 @@ describe('removeFlavorBlock', () => {
     const { changed } = removeFlavorBlock(BASE_GRADLE, 'ghost');
     expect(changed).toBe(false);
   });
+
+  test('drops the empty productFlavors and flavorDimensions when the last flavor goes', () => {
+    const content = injectFlavor(BASE_GRADLE, { flavorName: 'staging' }).content;
+    const { content: result, changed } = removeFlavorBlock(content, 'staging');
+    expect(changed).toBe(true);
+    expect(result).not.toContain('productFlavors');
+    expect(result).not.toContain('flavorDimensions');
+    expect(result).toContain('defaultConfig {');
+  });
+
+  test('treats a regex-meta name literally and does not throw', () => {
+    const { changed } = removeFlavorBlock(BASE_GRADLE, 'a.b');
+    expect(changed).toBe(false);
+  });
 });

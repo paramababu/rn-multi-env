@@ -14,7 +14,7 @@ CLI to automatically create Android/iOS build flavors for React Native projects 
 - 📜 Injects flavor into `build.gradle` (`productFlavors`)
 - 🍏 Generates `ios/GoogleService-Info-<flavor>.plist` and `ios/config/<Flavor>.xcconfig` (with `ENVFILE`, bundle id and display name), then prints the manual Xcode scheme/configuration steps
 - 🌱 Creates `.env.<flavor>` file using a customizable template
-- 🧠 Injects `require('react-native-config')` into `App.js` or `App.tsx`
+- 🧠 Injects `import Config from 'react-native-config'` into `App.js` or `App.tsx`
 - 📦 Auto-installs `react-native-config` using npm/yarn/pnpm (based on lock files)
 - 📜 Automatically adds run script to `package.json` like:  
   ```json
@@ -117,7 +117,7 @@ ios/
 .env.staging
 
 App.js (or App.tsx)
-└── require('react-native-config') injected
+└── import Config from 'react-native-config' injected
 ```
 
 ---

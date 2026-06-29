@@ -1,6 +1,13 @@
 // Pure string transformations for build.gradle. No filesystem access here so
 // every branch can be exercised with plain string fixtures in unit tests.
 
+// Escape any regex metacharacters so an arbitrary flavor name can be matched
+// literally. Validation already restricts created names, but the remove path
+// accepts a raw name, so we never trust it inside a RegExp.
+function escapeRegExp(str) {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
 // Given the index of an opening '{', return the index just past its matching
 // '}', correctly accounting for nested braces.
 function findBlockEnd(content, openIdx) {
@@ -33,7 +40,7 @@ function buildFlavorBlock({ flavorName, packageName, appName, indent = 8 }) {
 }
 
 function hasFlavor(content, flavorName) {
-  return new RegExp(`\\b${flavorName}\\s*{`).test(content);
+  return new RegExp(`\\b${escapeRegExp(flavorName)}\\s*{`).test(content);
 }
 
 // Inject a new flavor into gradle content. Returns { content, changed, reason }.
@@ -81,9 +88,30 @@ function injectFlavor(content, { flavorName, packageName, appName }) {
   return { content: updated, changed: true };
 }
 
+// When productFlavors no longer contains any flavor, drop the now-empty block
+// (and its orphaned flavorDimensions declaration) so removal is the clean
+// inverse of injection.
+function cleanupEmptyProductFlavors(content) {
+  const startIdx = content.search(/productFlavors\s*{/);
+  if (startIdx === -1) return content;
+
+  const openIdx = content.indexOf('{', startIdx);
+  const endIdx = findBlockEnd(content, openIdx);
+  if (content.slice(openIdx + 1, endIdx - 1).trim() !== '') return content;
+
+  const lineStart = content.lastIndexOf('\n', startIdx) + 1;
+  let lineEnd = endIdx;
+  if (content[lineEnd] === '\n') lineEnd++;
+
+  let result = content.slice(0, lineStart) + content.slice(lineEnd);
+  // The dimension is only meaningful while at least one flavor declares it.
+  result = result.replace(/^[ \t]*flavorDimensions[^\n]*\n/m, '');
+  return result;
+}
+
 // Remove a flavor block. Returns { content, changed }.
 function removeFlavorBlock(content, flavorName) {
-  const idx = content.search(new RegExp(`\\b${flavorName}\\s*{`));
+  const idx = content.search(new RegExp(`\\b${escapeRegExp(flavorName)}\\s*{`));
   if (idx === -1) return { content, changed: false };
 
   const openIdx = content.indexOf('{', idx);
@@ -94,7 +122,8 @@ function removeFlavorBlock(content, flavorName) {
   let lineEnd = endIdx;
   if (content[lineEnd] === '\n') lineEnd++;
 
-  return { content: content.slice(0, lineStart) + content.slice(lineEnd), changed: true };
+  const stripped = content.slice(0, lineStart) + content.slice(lineEnd);
+  return { content: cleanupEmptyProductFlavors(stripped), changed: true };
 }
 
-module.exports = { findBlockEnd, buildFlavorBlock, hasFlavor, injectFlavor, removeFlavorBlock };
+module.exports = { escapeRegExp, findBlockEnd, buildFlavorBlock, hasFlavor, injectFlavor, removeFlavorBlock };

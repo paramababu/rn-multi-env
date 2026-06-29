@@ -40,6 +40,7 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "prepublishOnly": "jest",
     "release": "standard-version"
   },
   "jest": {

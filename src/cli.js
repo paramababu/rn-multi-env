@@ -57,6 +57,13 @@ function run(argv = process.argv) {
     .option('-d, --dry-run', 'Preview changes without applying them')
     .action(
       withErrorHandling(async (flavorName, options) => {
+        const error = validateFlavorName(flavorName);
+        if (error) {
+          logger.error(`❌ ${error}`);
+          process.exitCode = 1;
+          return;
+        }
+
         await removeFlavor({ flavorName, dryRun: Boolean(options.dryRun) });
       })
     );
